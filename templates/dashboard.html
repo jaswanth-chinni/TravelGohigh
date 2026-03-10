@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block title %}Dashboard – TravelGo{% endblock %}
+{% block content %}
+<div class="section">
+  <div class="container">
+    <!-- Header -->
+    <div class="glass card mb-4" style="background:linear-gradient(135deg,rgba(108,99,255,0.2),rgba(255,107,107,0.1));position:relative;overflow:hidden;">
+      <div style="position:absolute;right:2rem;top:50%;transform:translateY(-50%);font-size:6rem;opacity:0.1;">✈️</div>
+      <h1 style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;">Hello, {{ session.get('user_name', 'Traveller') }}! 👋</h1>
+      <p class="text-secondary mt-1">{{ session.get('user_email', '') }}</p>
+      <div class="flex gap-2 mt-3 flex-wrap">
+        <a href="/search?mode=flight" class="btn btn-primary">✈ Book Flight</a>
+        <a href="/search?mode=train" class="btn btn-glass">🚂 Book Train</a>
+        <a href="/search?mode=bus" class="btn btn-glass">🚌 Book Bus</a>
+        <a href="/search?mode=hotel" class="btn btn-glass">🏨 Book Hotel</a>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="grid-4 mb-4">
+      {% set total = bookings|length %}
+      {% set confirmed = bookings|selectattr('status','eq','confirmed')|list|length %}
+      {% set cancelled = bookings|selectattr('status','eq','cancelled')|list|length %}
+      <div class="glass stat-card">
+        <div class="stat-number">{{ total }}</div>
+        <div class="stat-label">Total Bookings</div>
+      </div>
+      <div class="glass stat-card">
+        <div class="stat-number" style="color:#00d68f;">{{ confirmed }}</div>
+        <div class="stat-label">Confirmed</div>
+      </div>
+      <div class="glass stat-card">
+        <div class="stat-number" style="color:#ff6b6b;">{{ cancelled }}</div>
+        <div class="stat-label">Cancelled</div>
+      </div>
+      <div class="glass stat-card">
+        <div class="stat-number" style="color:#ffd93d;">
+          {% set total_spent = namespace(val=0) %}
+          {% for b in bookings %}{% if b.status == 'confirmed' %}{% set total_spent.val = total_spent.val + (b.total_cost|float) %}{% endif %}{% endfor %}
+          ₹{{ (total_spent.val/1000)|round(1) }}k
+        </div>
+        <div class="stat-label">Total Spent</div>
+      </div>
+    </div>
+
+    <!-- Recent Bookings -->
+    <div class="glass card">
+      <div class="flex justify-between align-center mb-3">
+        <h2 style="font-family:'Syne',sans-serif;font-size:1.3rem;">Recent Bookings</h2>
+        <a href="/my_orders" class="btn btn-glass btn-sm">View All →</a>
+      </div>
+      {% if bookings %}
+      <div style="overflow-x:auto;">
+        <table class="tg-table">
+          <thead>
+            <tr>
+              <th>Booking ID</th>
+              <th>Type</th>
+              <th>Details</th>
+              <th>Date</th>
+              <th>Amount</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for b in bookings[:5] %}
+            <tr>
+              <td style="font-family:'Syne',sans-serif;font-size:0.8rem;color:var(--primary-light);">{{ b.booking_id }}</td>
+              <td>
+                {% if b.mode == 'flight' %}✈️{% elif b.mode == 'train' %}🚂{% elif b.mode == 'bus' %}🚌{% else %}🏨{% endif %}
+                {{ b.mode|title }}
+              </td>
+              <td style="font-size:0.85rem;">{{ b.details }}</td>
+              <td style="font-size:0.82rem;color:var(--text-muted);">{{ b.travel_date or b.book_date[:10] }}</td>
+              <td style="color:#ffd93d;font-weight:600;">₹{{ b.total_cost }}</td>
+              <td>
+                {% if b.status == 'confirmed' %}<span class="badge badge-success">Confirmed</span>
+                {% else %}<span class="badge badge-danger">Cancelled</span>{% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="text-center" style="padding:3rem;">
+        <div style="font-size:3rem;margin-bottom:1rem;">🗺️</div>
+        <p class="text-secondary">No bookings yet. Start your adventure!</p>
+        <a href="/search?mode=flight" class="btn btn-primary mt-3">Book Now →</a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

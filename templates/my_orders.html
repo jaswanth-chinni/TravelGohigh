@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}My Orders – TravelGo{% endblock %}
+{% block content %}
+<div class="section">
+  <div class="container">
+    <div class="flex justify-between align-center mb-4 flex-wrap gap-2">
+      <div>
+        <h1 style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;">My Orders</h1>
+        <p class="text-secondary">All your bookings in one place</p>
+      </div>
+      <a href="/search?mode=flight" class="btn btn-primary">+ New Booking</a>
+    </div>
+
+    <!-- Filter Tabs -->
+    <div class="search-tabs mb-4">
+      <button class="tab-btn active" onclick="filterBookings('all', this)">All</button>
+      <button class="tab-btn" onclick="filterBookings('confirmed', this)">✅ Confirmed</button>
+      <button class="tab-btn" onclick="filterBookings('cancelled', this)">❌ Cancelled</button>
+      <button class="tab-btn" onclick="filterBookings('flight', this)">✈ Flights</button>
+      <button class="tab-btn" onclick="filterBookings('train', this)">🚂 Trains</button>
+      <button class="tab-btn" onclick="filterBookings('bus', this)">🚌 Buses</button>
+      <button class="tab-btn" onclick="filterBookings('hotel', this)">🏨 Hotels</button>
+    </div>
+
+    {% if bookings %}
+    <div id="bookingsList">
+      {% for b in bookings %}
+      <div class="glass result-card booking-item" data-status="{{ b.status }}" data-mode="{{ b.mode }}" style="flex-direction:column;align-items:flex-start;gap:1rem;">
+        <div class="flex justify-between align-center w-100 flex-wrap gap-2">
+          <div class="flex align-center gap-2">
+            <div class="icon-box">
+              {% if b.mode == 'flight' %}✈️{% elif b.mode == 'train' %}🚂{% elif b.mode == 'bus' %}🚌{% else %}🏨{% endif %}
+            </div>
+            <div>
+              <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;">{{ b.mode|title }}</div>
+              <div style="font-size:0.75rem;color:var(--primary-light);font-family:'Syne',sans-serif;">{{ b.booking_id }}</div>
+            </div>
+          </div>
+          <div class="flex align-center gap-2">
+            {% if b.status == 'confirmed' %}
+            <span class="badge badge-success">● Confirmed</span>
+            {% else %}
+            <span class="badge badge-danger">✕ Cancelled</span>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="grid-4 w-100">
+          <div>
+            <div class="ticket-label">Details</div>
+            <div style="font-size:0.9rem;font-weight:500;margin-top:0.2rem;">{{ b.details }}</div>
+          </div>
+          <div>
+            <div class="ticket-label">Travel Date</div>
+            <div style="font-size:0.9rem;margin-top:0.2rem;">{{ b.travel_date or '—' }}</div>
+          </div>
+          <div>
+            <div class="ticket-label">Booked On</div>
+            <div style="font-size:0.9rem;margin-top:0.2rem;">{{ b.book_date[:10] }}</div>
+          </div>
+          <div>
+            <div class="ticket-label">Amount</div>
+            <div style="font-size:1.1rem;font-weight:700;color:#ffd93d;font-family:'Syne',sans-serif;margin-top:0.2rem;">₹{{ b.total_cost }}</div>
+          </div>
+        </div>
+
+        {% if b.status == 'confirmed' %}
+        <div class="flex gap-2">
+          <form action="/cancel_booking" method="POST" onsubmit="return confirm('Are you sure you want to cancel this booking?');">
+            <input type="hidden" name="booking_id" value="{{ b.booking_id }}">
+            <button type="submit" class="btn btn-danger btn-sm">Cancel Booking</button>
+          </form>
+        </div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+
+    {% else %}
+    <div class="glass card text-center" style="padding:4rem;">
+      <div style="font-size:4rem;margin-bottom:1rem;">📋</div>
+      <h2 style="font-family:'Syne',sans-serif;margin-bottom:0.5rem;">No Orders Yet</h2>
+      <p class="text-secondary">You haven't made any bookings. Start exploring!</p>
+      <a href="/" class="btn btn-primary mt-4">Explore Now →</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+function filterBookings(filter, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.booking-item').forEach(item => {
+    const show = filter === 'all' ||
+                 item.dataset.status === filter ||
+                 item.dataset.mode === filter;
+    item.style.display = show ? 'flex' : 'none';
+  });
+}
+</script>
+{% endblock %}

@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% block title %}Checkout – TravelGo{% endblock %}
+{% block content %}
+<div class="section">
+  <div class="container">
+    <div class="checkout-card glass">
+      <div class="flex align-center gap-2 mb-4">
+        <a href="javascript:history.back()" class="btn btn-glass btn-sm">← Back</a>
+        <h1 style="font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;">Confirm Booking</h1>
+      </div>
+
+      <!-- Trip Summary -->
+      <div class="glass-sm" style="padding:1.5rem;margin-bottom:1.5rem;background:rgba(108,99,255,0.08);">
+        <h3 style="font-family:'Syne',sans-serif;margin-bottom:1rem;font-size:1rem;color:var(--primary-light);">
+          {% if mode == 'flight' %}✈ FLIGHT{% elif mode == 'train' %}🚂 TRAIN{% elif mode == 'bus' %}🚌 BUS{% else %}🏨 HOTEL{% endif %}
+          DETAILS
+        </h3>
+        <div class="grid-2">
+          {% if mode in ['flight', 'train', 'bus'] %}
+          <div>
+            <div class="ticket-label">Route</div>
+            <div class="ticket-value" style="font-size:1.2rem;font-family:'Syne',sans-serif;">{{ item.source|title }} → {{ item.destination|title }}</div>
+          </div>
+          <div>
+            <div class="ticket-label">Service</div>
+            <div class="ticket-value">{{ item.name }}</div>
+          </div>
+          <div>
+            <div class="ticket-label">Departure</div>
+            <div class="ticket-value">{{ item.departure }} → {{ item.arrival }}</div>
+          </div>
+          <div>
+            <div class="ticket-label">Duration</div>
+            <div class="ticket-value">{{ item.duration }}</div>
+          </div>
+          {% else %}
+          <div>
+            <div class="ticket-label">Hotel</div>
+            <div class="ticket-value" style="font-size:1.1rem;font-family:'Syne',sans-serif;">{{ item.name }}</div>
+          </div>
+          <div>
+            <div class="ticket-label">Location</div>
+            <div class="ticket-value">📍 {{ item.location|title }}</div>
+          </div>
+          {% endif %}
+          <div>
+            <div class="ticket-label">Date</div>
+            <div class="ticket-value">{{ date or 'Not specified' }}</div>
+          </div>
+          <div>
+            <div class="ticket-label">Cost</div>
+            <div class="ticket-value" style="color:#ffd93d;font-family:'Syne',sans-serif;font-size:1.2rem;">₹{{ item.cost }}{% if mode != 'hotel' %}/person{% else %}/night{% endif %}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Passenger/Nights Form -->
+      <form action="/confirm_booking" method="POST">
+        {% if mode != 'hotel' %}
+        <div class="form-group">
+          <label class="form-label">Number of Passengers</label>
+          <select class="form-control" name="passengers" id="paxSelect" onchange="updateTotal()">
+            {% for i in range(1,6) %}
+            <option value="{{ i }}" {% if passengers|int == i %}selected{% endif %}>{{ i }} Passenger{% if i > 1 %}s{% endif %}</option>
+            {% endfor %}
+          </select>
+        </div>
+        {% else %}
+        <div class="form-group">
+          <label class="form-label">Number of Nights</label>
+          <select class="form-control" name="nights" id="nightsSelect" onchange="updateTotal()">
+            {% for i in [1,2,3,4,5,7,10,14] %}
+            <option value="{{ i }}">{{ i }} Night{% if i > 1 %}s{% endif %}</option>
+            {% endfor %}
+          </select>
+        </div>
+        {% endif %}
+
+        <!-- Price Summary -->
+        <div class="glass-sm" style="padding:1.5rem;margin:1.5rem 0;">
+          <h3 style="font-family:'Syne',sans-serif;font-size:1rem;margin-bottom:1rem;color:var(--text-secondary);">PRICE SUMMARY</h3>
+          <div class="price-row">
+            <span class="text-secondary">Base Price</span>
+            <span>₹{{ item.cost }} × <span id="unitCount">{{ passengers or 1 }}</span></span>
+          </div>
+          <div class="price-row">
+            <span class="text-secondary">Taxes & Fees</span>
+            <span>Included</span>
+          </div>
+          <div class="price-row total">
+            <span style="font-weight:600;">Total Amount</span>
+            <span class="price-total" id="totalPrice">₹{{ (item.cost|int) * (passengers|int or 1) }}</span>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100" style="border-radius:12px;padding:1rem;font-size:1rem;">
+          Confirm & Book ✅
+        </button>
+        <p class="text-center text-muted mt-2" style="font-size:0.8rem;">You will receive a confirmation email after booking.</p>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+const basePrice = {{ item.cost }};
+function updateTotal() {
+  const sel = document.getElementById('paxSelect') || document.getElementById('nightsSelect');
+  const count = parseInt(sel.value);
+  document.getElementById('unitCount').textContent = count;
+  document.getElementById('totalPrice').textContent = '₹' + (basePrice * count);
+}
+</script>
+{% endblock %}

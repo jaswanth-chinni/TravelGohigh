@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% block title %}TravelGo – Explore the World{% endblock %}
+
+{% block content %}
+<!-- Hero -->
+<div class="hero">
+  <div class="container" style="z-index:1;">
+    <div class="badge badge-primary mb-3" style="display:inline-block;">🌍 Your World, Your Way</div>
+    <h1 class="hero-title">Where Will You<br>Go Next?</h1>
+    <p class="hero-subtitle">Book flights, trains, buses and hotels across India in one place. Fast, easy, beautiful.</p>
+    {% if not session.get('user_email') %}
+    <div class="flex gap-2 justify-center flex-wrap mt-4">
+      <a href="/register" class="btn btn-primary">Start Exploring ✈</a>
+      <a href="/login" class="btn btn-glass">Login to Book</a>
+    </div>
+    {% endif %}
+
+    <!-- Search Box -->
+    <div class="glass search-box mt-5">
+      <form action="/search" method="POST" id="searchForm">
+        <div class="search-tabs">
+          <button type="button" class="tab-btn active" data-mode="flight" onclick="setMode('flight', this)">✈ Flights</button>
+          <button type="button" class="tab-btn" data-mode="train" onclick="setMode('train', this)">🚂 Trains</button>
+          <button type="button" class="tab-btn" data-mode="bus" onclick="setMode('bus', this)">🚌 Buses</button>
+          <button type="button" class="tab-btn" data-mode="hotel" onclick="setMode('hotel', this)">🏨 Hotels</button>
+        </div>
+        <input type="hidden" name="mode" id="modeInput" value="flight">
+
+        <div class="search-grid" id="transportSearch">
+          <div class="form-group">
+            <label class="form-label">From</label>
+            <input type="text" class="form-control" name="source" placeholder="e.g. Delhi" list="cities">
+          </div>
+          <div class="form-group">
+            <label class="form-label">To</label>
+            <input type="text" class="form-control" name="destination" placeholder="e.g. Mumbai" list="cities">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Date</label>
+            <input type="date" class="form-control" name="date">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Passengers</label>
+            <select class="form-control" name="passengers">
+              <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
+            </select>
+          </div>
+          <div class="form-group" style="display:flex;align-items:flex-end;">
+            <button type="submit" class="btn btn-primary w-100">Search 🔍</button>
+          </div>
+        </div>
+
+        <div class="search-grid" id="hotelSearch" style="display:none;">
+          <div class="form-group">
+            <label class="form-label">City</label>
+            <input type="text" class="form-control" name="city" placeholder="e.g. Goa" list="cities">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Check-in</label>
+            <input type="date" class="form-control" name="date">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Nights</label>
+            <select class="form-control" name="nights"><option>1</option><option>2</option><option>3</option><option>5</option><option>7</option></select>
+          </div>
+          <div class="form-group" style="display:flex;align-items:flex-end;">
+            <button type="submit" class="btn btn-primary w-100">Find Hotels 🏨</button>
+          </div>
+        </div>
+      </form>
+      <datalist id="cities">
+        <option value="Delhi"><option value="Mumbai"><option value="Bangalore"><option value="Chennai">
+        <option value="Hyderabad"><option value="Kolkata"><option value="Goa"><option value="Jaipur"><option value="Pune">
+      </datalist>
+    </div>
+  </div>
+</div>
+
+<!-- Features -->
+<section class="section">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="section-title">Why Choose TravelGo?</h2>
+      <p class="section-subtitle">Everything you need for a seamless travel experience</p>
+    </div>
+    <div class="grid-4">
+      <div class="glass card text-center">
+        <div style="font-size:2.5rem;margin-bottom:1rem;">⚡</div>
+        <h3 style="font-family:'Syne',sans-serif;font-size:1.1rem;margin-bottom:0.5rem;">Instant Booking</h3>
+        <p class="text-secondary" style="font-size:0.88rem;">Confirm your bookings in seconds with real-time availability.</p>
+      </div>
+      <div class="glass card text-center">
+        <div style="font-size:2.5rem;margin-bottom:1rem;">🔒</div>
+        <h3 style="font-family:'Syne',sans-serif;font-size:1.1rem;margin-bottom:0.5rem;">Secure Payments</h3>
+        <p class="text-secondary" style="font-size:0.88rem;">Your data is safe with AWS-powered encryption.</p>
+      </div>
+      <div class="glass card text-center">
+        <div style="font-size:2.5rem;margin-bottom:1rem;">📱</div>
+        <h3 style="font-family:'Syne',sans-serif;font-size:1.1rem;margin-bottom:0.5rem;">Email Alerts</h3>
+        <p class="text-secondary" style="font-size:0.88rem;">Get instant notifications for bookings and cancellations via SNS.</p>
+      </div>
+      <div class="glass card text-center">
+        <div style="font-size:2.5rem;margin-bottom:1rem;">🌐</div>
+        <h3 style="font-family:'Syne',sans-serif;font-size:1.1rem;margin-bottom:0.5rem;">All-in-One</h3>
+        <p class="text-secondary" style="font-size:0.88rem;">Flights, trains, buses, and hotels under one roof.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Popular Destinations -->
+<section class="section" style="padding-top:0;">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="section-title">Popular Destinations</h2>
+      <p class="section-subtitle">Discover India's most loved travel spots</p>
+    </div>
+    <div class="grid-3">
+      {% set destinations = [
+        ('🌅', 'Goa', 'Beaches & Nightlife', 'hotel', 'goa'),
+        ('🏰', 'Jaipur', 'Heritage & Culture', 'hotel', 'jaipur'),
+        ('🌆', 'Mumbai', 'City of Dreams', 'hotel', 'mumbai'),
+        ('🛕', 'Delhi', 'Historical Marvel', 'flight', 'delhi'),
+        ('🌿', 'Bangalore', 'Garden City', 'hotel', 'bangalore'),
+        ('🏛️', 'Hyderabad', 'City of Nizams', 'hotel', 'hyderabad'),
+      ] %}
+      {% for emoji, name, tag, mode, city in destinations %}
+      <a href="/search?mode={{ mode }}&city={{ city }}" style="text-decoration:none;">
+        <div class="glass card" style="padding:1.5rem;cursor:pointer;">
+          <div style="font-size:3rem;margin-bottom:1rem;">{{ emoji }}</div>
+          <h3 style="font-family:'Syne',sans-serif;font-size:1.2rem;margin-bottom:0.3rem;">{{ name }}</h3>
+          <p class="text-muted" style="font-size:0.85rem;">{{ tag }}</p>
+          <div class="mt-2">
+            <span class="badge badge-primary">Explore →</span>
+          </div>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<script>
+function setMode(mode, btn) {
+  document.getElementById('modeInput').value = mode;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  if (mode === 'hotel') {
+    document.getElementById('transportSearch').style.display = 'none';
+    document.getElementById('hotelSearch').style.display = 'grid';
+  } else {
+    document.getElementById('transportSearch').style.display = 'grid';
+    document.getElementById('hotelSearch').style.display = 'none';
+  }
+}
+// Set today as min date
+document.querySelectorAll('input[type=date]').forEach(el => { el.min = new Date().toISOString().split('T')[0]; });
+</script>
+{% endblock %}

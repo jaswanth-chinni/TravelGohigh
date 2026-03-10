@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Booking Confirmed – TravelGo{% endblock %}
+{% block content %}
+<div class="section">
+  <div class="container">
+    <!-- Success Banner -->
+    <div class="text-center mb-4">
+      <div style="font-size:4rem;animation:bounce 1s ease infinite alternate;">✅</div>
+      <h1 style="font-family:'Syne',sans-serif;font-size:2.5rem;font-weight:800;margin-top:1rem;">Booking Confirmed!</h1>
+      <p class="text-secondary mt-1">A confirmation has been sent to your email via AWS SNS.</p>
+    </div>
+
+    <!-- Ticket -->
+    <div class="glass ticket">
+      <div class="text-center mb-4" style="padding-bottom:1.5rem;border-bottom:1px dashed var(--glass-border);">
+        <div style="font-size:2rem;margin-bottom:0.5rem;">
+          {% if booking.mode == 'flight' %}✈️{% elif booking.mode == 'train' %}🚂{% elif booking.mode == 'bus' %}🚌{% else %}🏨{% endif %}
+        </div>
+        <div style="font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;color:var(--primary-light);">{{ booking.booking_id }}</div>
+        <div class="badge badge-success mt-2">● CONFIRMED</div>
+      </div>
+
+      <div class="ticket-row">
+        <span class="ticket-label">Passenger / Guest</span>
+        <span class="ticket-value">{{ session.get('user_name', 'Traveller') }}</span>
+      </div>
+      <div class="ticket-row">
+        <span class="ticket-label">Type</span>
+        <span class="ticket-value">{{ booking.mode|title }}</span>
+      </div>
+      <div class="ticket-row">
+        <span class="ticket-label">Details</span>
+        <span class="ticket-value">{{ booking.details }}</span>
+      </div>
+      {% if booking.travel_date %}
+      <div class="ticket-row">
+        <span class="ticket-label">Travel Date</span>
+        <span class="ticket-value">{{ booking.travel_date }}</span>
+      </div>
+      {% endif %}
+      {% if booking.passengers %}
+      <div class="ticket-row">
+        <span class="ticket-label">Passengers</span>
+        <span class="ticket-value">{{ booking.passengers }}</span>
+      </div>
+      {% endif %}
+      <div class="ticket-row">
+        <span class="ticket-label">Total Amount</span>
+        <span class="ticket-value" style="color:#ffd93d;font-family:'Syne',sans-serif;font-size:1.3rem;">₹{{ booking.total_cost }}</span>
+      </div>
+      <div class="ticket-row">
+        <span class="ticket-label">Booked On</span>
+        <span class="ticket-value">{{ booking.book_date[:16]|replace('T', ' ') }}</span>
+      </div>
+
+      <div class="text-center mt-4 flex gap-2 justify-center flex-wrap">
+        <a href="/my_orders" class="btn btn-primary">View My Orders</a>
+        <a href="/" class="btn btn-glass">Book Another</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+@keyframes bounce { from { transform: scale(1); } to { transform: scale(1.1); } }
+</style>
+{% endblock %}

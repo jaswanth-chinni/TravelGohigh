@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}TravelGo – Your Journey Awaits{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✈️</text></svg>">
+  {% block head %}{% endblock %}
+</head>
+<body>
+
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+  <div class="flash-container">
+    {% for category, message in messages %}
+    <div class="flash flash-{{ category }}">
+      {% if category == 'success' %}✅{% else %}⚠️{% endif %}
+      {{ message }}
+    </div>
+    {% endfor %}
+  </div>
+  <script>
+    setTimeout(() => {
+      const fc = document.querySelector('.flash-container');
+      if (fc) { fc.style.transition = 'opacity 0.5s'; fc.style.opacity = '0'; setTimeout(() => fc.remove(), 500); }
+    }, 4000);
+  </script>
+  {% endif %}
+{% endwith %}
+
+<nav>
+  <a href="/" class="nav-logo">✈ TravelGo</a>
+  <ul class="nav-links">
+    <li><a href="/" {% if request.path == '/' %}class="active"{% endif %}>Home</a></li>
+    <li><a href="/about" {% if request.path == '/about' %}class="active"{% endif %}>About</a></li>
+    {% if session.get('user_email') %}
+      <li><a href="/search?mode=flight" {% if request.path == '/search' %}class="active"{% endif %}>Search</a></li>
+      <li><a href="/dashboard" {% if request.path == '/dashboard' %}class="active"{% endif %}>Dashboard</a></li>
+      <li><a href="/my_orders" {% if request.path == '/my_orders' %}class="active"{% endif %}>My Orders</a></li>
+      <li><span style="color:var(--text-muted);font-size:0.82rem;padding:0 0.5rem;">Hi, {{ session.get('user_name','').split()[0] }}</span></li>
+      <li><a href="/logout" class="btn btn-glass btn-sm">Logout</a></li>
+    {% else %}
+      <li><a href="/login" {% if request.path == '/login' %}class="active"{% endif %}>Login</a></li>
+      <li><a href="/register" class="btn btn-primary btn-sm">Register</a></li>
+    {% endif %}
+  </ul>
+</nav>
+
+{% block content %}{% endblock %}
+
+<footer>
+  <div class="footer-logo">✈ TravelGo</div>
+  <p class="footer-text mt-1">Your trusted travel companion. Explore the world with us.</p>
+  <p class="footer-text mt-2" style="opacity:0.4;">© 2024 TravelGo. All rights reserved.</p>
+</footer>
+
+</body>
+</html>

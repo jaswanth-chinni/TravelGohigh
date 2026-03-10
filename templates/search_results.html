@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block title %}Search Results – TravelGo{% endblock %}
+{% block content %}
+<div class="section">
+  <div class="container">
+    <!-- Header -->
+    <div class="mb-4">
+      <div class="flex align-center gap-2 mb-2">
+        <a href="/" class="btn btn-glass btn-sm">← Back</a>
+        <span class="badge badge-primary">
+          {% if mode == 'flight' %}✈ Flights{% elif mode == 'train' %}🚂 Trains{% elif mode == 'bus' %}🚌 Buses{% else %}🏨 Hotels{% endif %}
+        </span>
+      </div>
+      <h1 style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;">
+        {% if mode == 'hotel' %}
+          Hotels in {{ city|title or 'All Cities' }}
+        {% else %}
+          {{ source|title or 'All' }} → {{ destination|title or 'All' }}
+        {% endif %}
+      </h1>
+      {% if travel_date %}<p class="text-secondary">{{ travel_date }}</p>{% endif %}
+    </div>
+
+    <!-- Results -->
+    {% if results %}
+      <p class="text-secondary mb-3">{{ results|length }} result(s) found</p>
+
+      {% if mode in ['flight', 'train', 'bus'] %}
+        {% for item in results %}
+        <div class="glass result-card">
+          <div style="flex:1;">
+            <div class="result-route">
+              {{ item.source|title }} → {{ item.destination|title }}
+            </div>
+            <div class="result-time">
+              {{ item.name }} &nbsp;·&nbsp;
+              🕐 {{ item.departure }} – {{ item.arrival }}
+              &nbsp;·&nbsp; ⏱ {{ item.duration }}
+              {% if item.airline %}&nbsp;·&nbsp; {{ item.airline }}{% endif %}
+              {% if item.operator %}&nbsp;·&nbsp; {{ item.operator }}{% endif %}
+              {% if item.train_no %}&nbsp;·&nbsp; #{{ item.train_no }}{% endif %}
+            </div>
+            <div class="mt-2">
+              <span class="badge badge-success">🪑 {{ item.seats }} seats available</span>
+            </div>
+          </div>
+          <div style="text-align:right;">
+            <div class="result-price">₹{{ item.cost }}<small>/person</small></div>
+            <form action="/checkout" method="POST" class="mt-2">
+              <input type="hidden" name="mode" value="{{ mode }}">
+              <input type="hidden" name="item_id" value="{{ item.id }}">
+              <input type="hidden" name="date" value="{{ travel_date }}">
+              <input type="hidden" name="passengers" value="{{ request.form.get('passengers', 1) }}">
+              <button type="submit" class="btn btn-primary">Book Now →</button>
+            </form>
+          </div>
+        </div>
+        {% endfor %}
+
+      {% elif mode == 'hotel' %}
+        <div class="grid-2">
+          {% for item in results %}
+          <div class="glass hotel-card">
+            <div class="flex justify-between align-center mb-2">
+              <h3 style="font-family:'Syne',sans-serif;font-size:1.1rem;">{{ item.name }}</h3>
+              <span class="hotel-rating">
+                {% for i in range(item.rating) %}⭐{% endfor %}
+              </span>
+            </div>
+            <p class="text-secondary" style="font-size:0.85rem;margin-bottom:1rem;">📍 {{ item.location|title }} &nbsp;·&nbsp; {{ item.description }}</p>
+            <div class="flex flex-wrap gap-1 mb-3">
+              {% for am in item.amenities %}
+              <span class="hotel-amenity">{{ am }}</span>
+              {% endfor %}
+            </div>
+            <div class="flex justify-between align-center">
+              <div>
+                <span style="font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;color:#ffd93d;">₹{{ item.cost }}</span>
+                <span class="text-muted" style="font-size:0.8rem;">/night</span>
+              </div>
+              <form action="/checkout" method="POST">
+                <input type="hidden" name="mode" value="hotel">
+                <input type="hidden" name="item_id" value="{{ item.id }}">
+                <input type="hidden" name="date" value="{{ travel_date }}">
+                <button type="submit" class="btn btn-primary">Book →</button>
+              </form>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+    {% else %}
+      <div class="glass card text-center" style="padding:4rem;">
+        <div style="font-size:4rem;margin-bottom:1rem;">🔍</div>
+        <h2 style="font-family:'Syne',sans-serif;margin-bottom:0.5rem;">No Results Found</h2>
+        <p class="text-secondary">Try different cities or dates. We currently have limited routes – check popular cities!</p>
+        <div class="mt-4">
+          <a href="/" class="btn btn-primary">← Try New Search</a>
+        </div>
+        <!-- Hint -->
+        <div class="mt-4" style="font-size:0.85rem;color:var(--text-muted);">
+          💡 Available cities: Delhi, Mumbai, Bangalore, Chennai, Hyderabad, Kolkata, Goa, Jaipur, Pune
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

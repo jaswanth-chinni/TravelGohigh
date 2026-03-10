@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}About – TravelGo{% endblock %}
+{% block content %}
+<!-- Hero -->
+<div class="page-header" style="padding:5rem 2rem 3rem;">
+  <div class="container">
+    <div class="badge badge-primary mb-3" style="display:inline-block;">About Us</div>
+    <h1 style="font-family:'Syne',sans-serif;font-size:clamp(2.5rem,6vw,4.5rem);font-weight:800;background:linear-gradient(135deg,#fff,var(--primary-light),#ffd93d);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">
+      Redefining Travel<br>Across India
+    </h1>
+    <p class="text-secondary mt-3" style="max-width:600px;margin:1rem auto 0;font-size:1.05rem;line-height:1.8;">
+      TravelGo is a cloud-powered travel booking platform built on AWS, making it effortless to book flights, trains, buses and hotels across India.
+    </p>
+  </div>
+</div>
+
+<!-- Mission -->
+<section class="section" style="padding-top:2rem;">
+  <div class="container">
+    <div class="grid-2" style="align-items:center;gap:3rem;">
+      <div>
+        <h2 class="section-title">Our Mission</h2>
+        <p class="text-secondary mt-2" style="line-height:1.8;">
+          We believe travel should be simple, affordable, and delightful. TravelGo brings together all modes of transport and accommodation under one beautifully designed platform — powered by the reliability of AWS cloud infrastructure.
+        </p>
+        <p class="text-secondary mt-2" style="line-height:1.8;">
+          From booking a flight to Goa to finding a heritage hotel in Jaipur, TravelGo has you covered every step of the journey.
+        </p>
+      </div>
+      <div class="grid-2" style="gap:1rem;">
+        <div class="glass stat-card"><div class="stat-number">50+</div><div class="stat-label">Routes</div></div>
+        <div class="glass stat-card"><div class="stat-number">12+</div><div class="stat-label">Hotels</div></div>
+        <div class="glass stat-card"><div class="stat-number">9</div><div class="stat-label">Cities</div></div>
+        <div class="glass stat-card"><div class="stat-number">4</div><div class="stat-label">Travel Modes</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Technology -->
+<section class="section" style="padding-top:0;">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="section-title">Powered By AWS</h2>
+      <p class="section-subtitle">Enterprise-grade cloud infrastructure for reliability at scale</p>
+    </div>
+    <div class="grid-3">
+      {% set tech = [
+        ('🗃️', 'Amazon DynamoDB', 'NoSQL database storing users, bookings, transport, and hotel data with millisecond latency.'),
+        ('📨', 'Amazon SNS', 'Simple Notification Service sends real-time email alerts for bookings, cancellations, and account creation.'),
+        ('☁️', 'Amazon EC2', 'Elastic Compute Cloud hosts the Flask application with scalable compute power.'),
+        ('🔐', 'AWS IAM', 'Identity and Access Management for secure, role-based access to all AWS services.'),
+        ('🐍', 'Python Flask', 'Lightweight yet powerful web framework powering the TravelGo backend with clean routing and session management.'),
+        ('🎨', 'Glassmorphism UI', 'Modern frosted-glass aesthetic with smooth animations for a premium user experience.'),
+      ] %}
+      {% for emoji, name, desc in tech %}
+      <div class="glass card">
+        <div style="font-size:2.5rem;margin-bottom:1rem;">{{ emoji }}</div>
+        <h3 style="font-family:'Syne',sans-serif;font-size:1.05rem;margin-bottom:0.5rem;">{{ name }}</h3>
+        <p class="text-secondary" style="font-size:0.87rem;line-height:1.7;">{{ desc }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="section" style="padding-top:0;">
+  <div class="container">
+    <div class="glass card text-center" style="padding:4rem;background:linear-gradient(135deg,rgba(108,99,255,0.15),rgba(255,107,107,0.08));">
+      <h2 style="font-family:'Syne',sans-serif;font-size:2.5rem;font-weight:800;">Ready to Explore?</h2>
+      <p class="text-secondary mt-2">Create your free account and start booking your next adventure.</p>
+      <div class="flex gap-2 justify-center mt-4 flex-wrap">
+        <a href="/register" class="btn btn-primary">Get Started Free →</a>
+        <a href="/login" class="btn btn-glass">Already a member</a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

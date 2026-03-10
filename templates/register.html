@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Register – TravelGo{% endblock %}
+{% block content %}
+<div class="auth-wrapper">
+  <div class="glass auth-card">
+    <div class="text-center mb-4">
+      <div style="font-size:3rem;margin-bottom:1rem;">🌍</div>
+      <h1 class="auth-title">Create Account</h1>
+      <p class="text-secondary">Join TravelGo and start your journey</p>
+    </div>
+
+    <form action="/register" method="POST">
+      <div class="form-group">
+        <label class="form-label">Full Name</label>
+        <input type="text" class="form-control" name="name" placeholder="Your full name" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input type="email" class="form-control" name="email" placeholder="you@example.com" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Mobile Number</label>
+        <input type="tel" class="form-control" name="mobile" placeholder="+91 98765 43210" pattern="[0-9+\-\s]{10,15}" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" class="form-control" name="password" placeholder="Min 8 characters" minlength="8" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Confirm Password</label>
+        <input type="password" class="form-control" name="confirm_password" placeholder="Re-enter password" required>
+      </div>
+      <button type="submit" class="btn btn-primary w-100" style="border-radius:12px;padding:1rem;font-size:1rem;">
+        Create Account →
+      </button>
+    </form>
+
+    <p class="text-center mt-3 text-secondary" style="font-size:0.9rem;">
+      Already have an account? <a href="/login">Login here</a>
+    </p>
+  </div>
+</div>
+{% endblock %}
